@@ -1,0 +1,24 @@
+#!/bin/bash -l
+
+########################################################
+#
+# Starts the renderer if it is not already active.
+#
+# This script is meant to run as a cron job,
+# maybe every minute.
+#
+# Author: Jon Richards
+# Date April 13, 2012
+#
+########################################################
+
+#The "-renderer-in-use" is only used to identify this process as the
+#renderer on this server that is actually being used. If "-renderer-in-use"
+#is not used - this signifies it is only used for testing, not live.
+TEST=`ps ax | grep renderer-in-use | grep -v grep | wc -l`
+
+if [ $TEST -eq 1 ]
+then
+    java -classpath ${CLASSPATH}:${LIB_DIR} setiquest.renderer.Renderer $1 &
+fi
+
