@@ -213,6 +213,7 @@ public class Renderer
             beams[0] = b1;
             beams[1] = b2;
             beams[2] = b3;
+            System.out.println( beams.toString() );
 
 
             //JR - April 09, 2012 - This sometimes is a problem and need to 
@@ -232,7 +233,24 @@ public class Renderer
                     sigId);
 
             ObjectMapper mapper = new ObjectMapper(new BsonFactory());
-
+            System.out.print( "Act" + sdr.getActivityId() +" " ); 
+            
+            for ( int j = 0 ; j < 3 ; j++ ) {
+                if ( beams[j].getData() != null ) {
+                    System.out.print(beams[j].getData().length + " ");
+                } else {
+                    System.out.print( "null  " );
+                }
+            }
+            
+            System.out.print( "SubCh " + String.valueOf(subchannel) + " ");
+            System.out.print( "Pol " + sdr.getPol() + " ");
+            System.out.print( "Beam Pols " + sdr.getBeam()[0].getPolarization() +
+                              " : " + sdr.getBeam()[1].getPolarization() +
+                              " : " + sdr.getBeam()[2].getPolarization() );
+            
+            System.out.println();
+                            
             try
             {
 
@@ -244,6 +262,7 @@ public class Renderer
                 mapper.writeValue(new File(bsonFilename), sdr);
                 //jmapper.writeValue(new File(jsonFilename), sdr);
                 String result = Utils.sendBSONFile(bsonFilename, activity, obsType, firstData.polarization, subchannel);
+                System.out.println("bson sent: " + result );
                 if(result.contains("201 Created")) sendResult = "SENT.";
 
             } catch (JsonGenerationException e) {
