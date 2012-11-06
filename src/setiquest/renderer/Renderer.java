@@ -301,32 +301,39 @@ public class Renderer
 
         /**
          * Get the observation type number based on the type name in the file name.
+         * LN - Changed off strings to match what FileReceiver is providing.
          * 0 - target (first observation at this frequency for this run)
          * 1 - target1-on
-         * 2 - target1-off
+         * 2 - target1off
          * 3 - target2-on
-         * 4 - target2-off
+         * 4 - target2off
          * 5 - target3-on
-         * 6 - target3-off
+         * 6 - target3off
          * 7 - target4-on
-         * 8 - target4-off
+         * 8 - target4off
          * 9 - target5-on
-         * 10 - target5-off
+         * 10 - target5off
          * 99 - ???
          */
         private int getObsTypeInt(String obsType)
         {
             if(obsType == null) return 99;
+            
+            /*
+             * targetx-off changed to targetxoff to match actual filenames as
+             * FileReceiver delivers them.
+             */
+            
             else if(obsType.toLowerCase().contains("target1-on"))   return 1;
-            else if(obsType.toLowerCase().contains("target1-off"))  return 2;
+            else if(obsType.toLowerCase().contains("target1off"))  return 2;
             else if(obsType.toLowerCase().contains("target2-on"))   return 3;
-            else if(obsType.toLowerCase().contains("target2-off"))  return 4;
+            else if(obsType.toLowerCase().contains("target2off"))  return 4;
             else if(obsType.toLowerCase().contains("target3-on"))   return 5;
-            else if(obsType.toLowerCase().contains("target3-off"))  return 6;
+            else if(obsType.toLowerCase().contains("target3off"))  return 6;
             else if(obsType.toLowerCase().contains("target4-on"))   return 7;
-            else if(obsType.toLowerCase().contains("target4-off"))  return 8;
+            else if(obsType.toLowerCase().contains("target4off"))  return 8;
             else if(obsType.toLowerCase().contains("target5-on"))   return 9;
-            else if(obsType.toLowerCase().contains("target5-off"))  return 10;
+            else if(obsType.toLowerCase().contains("target5off"))  return 10;
             else if(obsType.toLowerCase().contains("target"))       return 0;
             else return 99;
 
