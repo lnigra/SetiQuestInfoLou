@@ -436,9 +436,29 @@ public class Renderer
         String[] children = null;
         String[] matchList = new String[1];
         matchList[0] = rORl;
-        children = dir.list(new FileFilter(".compamp", 
-                    matchList));
-
+        
+        /*
+         * LN One-shot delay to make sure file transfer is stable prior to
+         * reading them.
+         */
+        
+        //LN Need a couple new variables for one-shot
+        int lastNumChildren = 0; //LN Initialize the memory
+        int delta; //LN Variable for change in number of number of files.
+        int oneShotDelay = 5000; //LN Should be global variable or arg(?). 
+                                  // Takes away from follow-up timing. 
+                                  // Keep low.
+        
+        // LN Loop directory read to wait for  sure file transfer is stable
+        do {
+            children = dir.list(new FileFilter(".compamp", 
+                        matchList));
+            delta = children.length - lastNumChildren;
+            lastNumChildren = children.length;
+            //System.out.println ("waiting..." + String.valueOf(delta));
+            delay(oneShotDelay);
+        } while( children.length == 0 || delta != 0 );
+        
         if (children != null)
         {
             for (int i=0; i<children.length; i++)
@@ -740,6 +760,12 @@ public class Renderer
                 long lastTimeSecs = System.currentTimeMillis()/1000;
                 long lastPurgeSecs = System.currentTimeMillis()/1000;
                 long lastCompampPurgeSecs = System.currentTimeMillis()/1000;
+                
+                //LN Create target directories if they don't exist
+                File dataDir = new File(Utils.getDataDir());
+                File bsonDir = new File(Utils.getBsonDataDir());
+                if (!dataDir.exists()) dataDir.mkdir();
+                if (!bsonDir.exists()) bsonDir.mkdir();
 
                 //Loop forever 
                 while(true)
