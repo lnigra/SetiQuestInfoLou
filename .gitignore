@@ -1,9 +1,11 @@
 /nbproject/
 /build/
+/dist/
 CopyLibs/
 build.xml
 nblibraries.properties
 manifest.mf
 myrenderer.properties
+*.class
 
 
