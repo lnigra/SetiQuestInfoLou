@@ -1,0 +1,9 @@
+/nbproject/
+/build/
+CopyLibs/
+build.xml
+nblibraries.properties
+manifest.mf
+myrenderer.properties
+
+
