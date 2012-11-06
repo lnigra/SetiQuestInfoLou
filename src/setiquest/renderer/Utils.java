@@ -152,7 +152,7 @@ public class Utils
      */
     public static String getRendererVersion()
     {
-        return params.getParam("rendererversion");
+        return Ingest.rendering;
     }
 
     /**
@@ -415,7 +415,8 @@ public class Utils
             reqEntity.addPart("subject[observation_id]", new StringBody("" + obsId));
             reqEntity.addPart("subject[pol]", new StringBody("" + pol));
             reqEntity.addPart("subject[subchannel]", new StringBody("" + subchannel));
-            httppost.setEntity(reqEntity);
+            reqEntity.addPart("subject[rendering]", new StringBody("" + getRendererVersion()));
+               httppost.setEntity(reqEntity);
 
             HttpResponse response = httpclient.execute(httppost);
             HttpEntity resEntity = response.getEntity();
@@ -461,8 +462,10 @@ public class Utils
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost(Utils.getSubjectsURL());
 
-        Log.log("Sending " + filename + ", Act:" + actId + ", Obs type:" + obsId + ", Pol" + pol + ", subchannel:" + 
-                subchannel );
+        Log.log("Sending " + filename + ", Act:" + actId + 
+                ", Obs type:" + obsId + ", Pol" + pol + 
+                ", subchannel:" + subchannel + 
+                ", rendering:" + getRendererVersion() );
 
         FileBody bin = new FileBody(new File(filename));
         try
@@ -476,6 +479,7 @@ public class Utils
             reqEntity.addPart("subject[observation_id]", new StringBody("" + obsId));
             reqEntity.addPart("subject[pol]", new StringBody("" + pol));
             reqEntity.addPart("subject[subchannel]", new StringBody("" + subchannel));
+            reqEntity.addPart("subject[rendering]", new StringBody("" + getRendererVersion()));
             httppost.setEntity(reqEntity);
 
             HttpResponse response = httpclient.execute(httppost);

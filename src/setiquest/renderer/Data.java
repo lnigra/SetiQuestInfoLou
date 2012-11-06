@@ -66,6 +66,30 @@ public class Data
     //Usually the data is 1 subband, but can be more than one.
     //As a sanity check limit the max number of subbands to 16.
     int maxSubbands = 16;  // sanity check
+        
+    /**
+     * Utility method to get the integer code for a given polarization string
+     * @param polStr
+     * @return 0..4,99 for R,L,B,M,?,anything else.
+     */
+    public static int polStringToInt( String polStr ) {
+        //switch (polStr)
+        //{
+        if ( polStr.equals("R") ) {
+            return 0;
+        } else if ( polStr.equals("L") ) {
+            return 1;
+        } else if ( polStr.equals("B") ) {
+            return 2;
+        } else if ( polStr.equals("M") ) {
+            return 3;
+        } else if ( polStr.equals("?") ) {
+            return 4;
+        }
+                    
+         return 99;
+        
+    }    
 
     /**
      * Constructor.

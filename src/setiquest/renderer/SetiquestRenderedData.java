@@ -104,7 +104,7 @@ public class SetiquestRenderedData  implements Serializable
         _bandwidthMhz = bandwidthMhz;
         _beam = beam;
         _followupId = followupId;
-        _rendering = Utils.getRendererVersion();
+        //_rendering = Utils.getRendererVersion();
 
         //Convert the date and time
         //Date:        2012-01-13
@@ -274,13 +274,13 @@ public class SetiquestRenderedData  implements Serializable
      * Get the rendering version.
      * @return the rendering version. This is rendererversion in teh properties file.
      */
-    public String getRendering() { return _rendering; }
+    //public String getRendering() { return _rendering; }
 
     /**
      * Set the rendering version.
      * @param rendering the rendering version. 
      */
-    public void setRendering(String rendering) { _rendering = rendering; }
+    //public void setRendering(String rendering) { _rendering = rendering; }
 
 
     /**
@@ -290,15 +290,17 @@ public class SetiquestRenderedData  implements Serializable
     {
         private int _beam = 0;
         private int _target = 0;
+        private int  pol = 0;
         private byte[] _data = null;
 
         /**
          * Constructor.
          */
-        public Beam(int beam, int targetId, byte[] data)
+        public Beam(int beam, int targetId, int pol, byte[] data)
         {
             this._beam = beam;
             this._target = targetId;
+            this.pol = pol;
             this._data = data;
             setBeam(beam);
             setTarget(targetId);
@@ -328,6 +330,18 @@ public class SetiquestRenderedData  implements Serializable
          * @param target the target Id.
          */
         public void setTarget(int target) { _target = target; }
+
+        /**
+         * Get the Polarization.
+         * @return the target Id.
+         */
+        public int getPolarization() { return pol; }
+
+        /**
+         * Set the Polarization.
+         * @param target the target Id.
+         */
+        public void setPolarization(int pol) { _pol = pol; }
 
         /**
          * Get the data.

@@ -56,6 +56,22 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
  */
 public final class Ingest
 {
+    /**
+     * Static parameter "rendering" represents versioning of the translation of 
+     * time domain to waterfall pixel data, including scaling and normalization. 
+     * Anything that affects the waterfall image requires a version change.
+     * 
+     * 0 - Original with scaling = 10.4 and cast before scaling issue
+     * 
+     * 1 - Scaling changed to 15, normalized per spectrum rather than whole
+     *     waterfall, casting issue fixed.
+     * 
+     * 2 - Scaling changed to 26, (X + Y)/2 polarization combined after ingest
+     *     in FileInfo.combine(), from Renderer.Group.combine(), 
+     *     from Renderer.combine(), from Renderer.combinePolarizations().
+     */
+    static String rendering = "2";
+    
     private String filename = "";
     private byte[] pixelData = null;
     private boolean ingested = false;
@@ -93,6 +109,28 @@ public final class Ingest
     public byte[] getData()
     {
         return pixelData;
+    }
+    
+    /**
+     * Replace the processed data.
+     * Uses as much of new data as possible to fill the current array. If
+     * the new data array is shorter, the current data array is zero-filled.
+     * beyond that length.
+     */
+    public void setData( byte[] data )
+    {
+        if ( pixelData.length == data.length ) {
+            pixelData = data;
+        } else {
+            int i = 0;
+            while ( i < pixelData.length && i < data.length ) {
+                pixelData[i] = data[i];
+                i++;
+            }
+            for ( int j = i ; j < pixelData.length ; j++ ) {
+                pixelData[j] = 0;
+            }
+        }
     }
 
 
@@ -338,7 +376,7 @@ public final class Ingest
          * in terms of average noise power and the resolution of the display. 
          */
 
-        double scale = 15;
+        double scale = 26;
 
         // zero output buffer in case it's only partially filled
         for (int i=0; i<pixbuff.length; ++i)

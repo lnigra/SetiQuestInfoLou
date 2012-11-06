@@ -156,6 +156,9 @@ public class Renderer
             byte[] pixels3 = null;
             Data firstData = null;
             int activity = 0;
+            int pol1 = 99;
+            int pol2 = 99;
+            int pol3 = 99;
             int targetBeam1 = 0;
             int targetBeam2 = 0;
             int targetBeam3 = 0;
@@ -182,27 +185,30 @@ public class Renderer
                 if(fi.getBeam() == 1)
                 {
                     targetBeam1 = fi.getTargetId();
+                    pol1 = Data.polStringToInt(fi.pol); 
                     pixels1 = fi.getData();
                     if(sigId == 0) sigId = Integer.parseInt(fi.sigId);
                 }
                 else if(fi.getBeam() == 2)
                 {
                     targetBeam2 = fi.getTargetId();
+                    pol2 = Data.polStringToInt(fi.pol); 
                     pixels2 = fi.getData();
                     if(sigId == 0) sigId = Integer.parseInt(fi.sigId);
                 }
                 else if(fi.getBeam() == 3)
                 {
                     targetBeam3 = fi.getTargetId();
+                    pol3 = Data.polStringToInt(fi.pol); 
                     pixels3 = fi.getData();
                     if(sigId == 0) sigId = Integer.parseInt(fi.sigId);
                 }
             }
 
-            SetiquestRenderedData sqd = new SetiquestRenderedData();;
-            SetiquestRenderedData.Beam b1 = sqd.new Beam(1, targetBeam1, pixels1);
-            SetiquestRenderedData.Beam b2 = sqd.new Beam(2, targetBeam2, pixels2);
-            SetiquestRenderedData.Beam b3 = sqd.new Beam(3, targetBeam3, pixels3);
+            SetiquestRenderedData sqd = new SetiquestRenderedData();
+            SetiquestRenderedData.Beam b1 = sqd.new Beam(1, targetBeam1, pol1, pixels1);
+            SetiquestRenderedData.Beam b2 = sqd.new Beam(2, targetBeam2, pol2, pixels2);
+            SetiquestRenderedData.Beam b3 = sqd.new Beam(3, targetBeam3, pol3, pixels3);
             SetiquestRenderedData.Beam[] beams = new SetiquestRenderedData.Beam[3];
             beams[0] = b1;
             beams[1] = b2;
@@ -260,6 +266,37 @@ public class Renderer
                 FileInfo fi = (FileInfo)files.get(i);
                 fi.backup(getDir());
             }
+        }
+
+        /**
+        * Determine if another group's files are polarization counterparts of
+        * this one's and if so, combine the other group's pixel data for
+        * corresponding zx's with this one.
+        * @return boolean true if they correspond and were combined.
+        */
+        private boolean combine( Group gr ) {
+            boolean result = false;
+            FileInfo fi, figr, fi1, fi2;
+            if ( files.isEmpty() || gr.files.isEmpty() ) return false;
+            fi1 = (FileInfo)files.elementAt(0);
+            fi2 = (FileInfo)gr.files.elementAt(0);
+            if ( fi1.subchannel.equals( fi2.subchannel ) ) {
+                for ( int i = 0 ; i < files.size() ; i++ ) {
+                    fi = (FileInfo)files.elementAt(i);
+                    for ( int j = 0 ; j < gr.files.size() ; j++ ) {
+                        figr = (FileInfo)gr.files.elementAt(j);
+                        result = fi.combine( figr ) || result;  // order is essential                  
+                    }                
+                }
+                if ( result ) {                
+                    for(int i = 0; i < gr.files.size(); i++)
+                    {
+                        figr = (FileInfo)gr.files.get(i);
+                        figr.backup(getDir());
+                    }
+                }
+            }
+            return result;
         }
 
         /**
@@ -407,6 +444,8 @@ public class Renderer
 
         //Make groups of the files.
         if(!processFiles()) return false;
+        
+        combinePolarizations();
 
         //Process any file groups.
         return processGroups();
@@ -556,6 +595,35 @@ public class Renderer
 
 
     /**
+     * Finds polarization counterpart groups in groupList, replaces pixels in
+     * one with combined values, then removes the other one from groupList.
+     */
+    
+    private void combinePolarizations() {
+        
+        Group refGroup;
+        Group tmpGroup;
+        int tmpIndex;
+        Vector tmpGroupList = (Vector)groupList.clone();
+        int refIndex = 0;
+        while ( refIndex < groupList.size() - 1 ) {
+            refGroup = (Group)groupList.elementAt( refIndex );
+            boolean isCombined = false;
+            tmpIndex = refIndex + 1;
+            while ( tmpIndex < tmpGroupList.size() && !isCombined ) {
+                tmpGroup = (Group)tmpGroupList.elementAt( tmpIndex );
+                // Combine groups if from same zx
+                if ( isCombined = refGroup.combine( tmpGroup ) )  {
+                    groupList.removeElementAt( tmpIndex );
+                    tmpGroupList.removeElementAt( tmpIndex );
+                }
+                tmpIndex++;
+            }
+            refIndex++;
+        }
+    }
+    
+    /**
      * Sleep for a number of milliseconds.
      * @param ms the number of milliseconds to sleep.
      */
@@ -650,8 +718,7 @@ public class Renderer
                 //Loop forever 
                 while(true)
                 {
-                    fm.combForFiles(".R.");
-                    fm.combForFiles(".L.");
+                    fm.combForFiles("");
 
                     String info = fm.groupsToString();
                     if(info != null)

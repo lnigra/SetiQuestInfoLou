@@ -325,6 +325,58 @@ public class FileInfo
         return true;
     }
 
+    // If everything but polarization matches
+    public boolean combine(FileInfo fi)
+    {
+        if(!isValid()) parse();
+        if(!isValid()) return false;
+        if(fi.parse() == false) return false;
+        if(!date.equals(fi.date)) return false;
+        if(!time.equals(fi.time)) return false;
+        if(!activityId.equals(fi.activityId)) return false;
+        if(!activityType.equals(fi.activityType)) return false;
+        if(!dxNum.equals(fi.dxNum)) return false;
+
+        if(!isDX)
+        {
+            if(!subchannel.equals(fi.subchannel)) return false;
+        }
+        
+        boolean result = this.combinePols( fi );
+        return result;
+    }
+
+    public boolean combinePols(FileInfo fi)
+    {
+        
+        if( pol.equals("L") && fi.pol.equals("R") ||
+            pol.equals("R") && fi.pol.equals("L")) {
+            double val;
+            byte[] pixData = ingest.getData();
+            byte[] fiPixData = fi.ingest.getData();
+            for ( int i = 0 ; i < pixData.length ; i++ ) {
+                val = ( (double)byteToUnsignedInt(pixData[i]) + 
+                        (double)byteToUnsignedInt(fiPixData[i]) ) / 2.0;
+                pixData[i] = (byte)( val + 0.5 );
+            }
+            System.out.println( "combined: " + this.dxNum + ":" + this.subchannel + ":" + this.pol + 
+                                " " + fi.dxNum + ":" + fi.subchannel + ":" + fi.pol );
+            pol = "B";
+            ingest.getFirstData().polarization = 2;
+            ingest.setData( pixData );
+            return true;
+        }
+        return false;
+    }
+    
+    public int byteToUnsignedInt( byte x ) {
+        if ( x < 0 ) {
+            return (int)(x+256);
+        } else {
+            return (int)x;
+        }
+    }
+
     /**
      * Get a string representation.
      * @return a string representation.
