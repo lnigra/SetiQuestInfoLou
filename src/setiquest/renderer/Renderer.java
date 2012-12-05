@@ -457,7 +457,7 @@ public class Renderer
             lastNumChildren = children.length;
             //System.out.println ("waiting..." + String.valueOf(delta));
             delay(oneShotDelay);
-        } while( children.length == 0 || delta != 0 );
+        } while( delta != 0 );
         
         if (children != null)
         {
