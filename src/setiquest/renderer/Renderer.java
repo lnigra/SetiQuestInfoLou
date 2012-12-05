@@ -756,6 +756,12 @@ public class Renderer
             try
             {
                 Renderer fm = new Renderer(Utils.getDataDir());
+                // Uncomment if not running as a thread below
+                //ScheduleMonitor sm = new ScheduleMonitor();
+                long scheduleUpdateMillis = 1000 * 
+                        Long.valueOf( Utils.getScheduleUpdatePeriod() );
+                long timeNow;
+                long lastScheduleUpdate = System.currentTimeMillis();
 
                 long lastTimeSecs = System.currentTimeMillis()/1000;
                 long lastPurgeSecs = System.currentTimeMillis()/1000;
@@ -770,6 +776,16 @@ public class Renderer
                 //Loop forever 
                 while(true)
                 {
+                    timeNow = System.currentTimeMillis();
+                    
+                    // Check if schedule check is due
+                    if ( ( timeNow - lastScheduleUpdate - scheduleUpdateMillis ) >= 0 ) {
+                        lastScheduleUpdate = timeNow;
+                        ScheduleMonitor sm = new ScheduleMonitor();
+                        new Thread(sm).start();
+                        //sm.run(); // Replace two above lines for non-thread.
+                    }
+                        
                     fm.combForFiles("");
 
                     String info = fm.groupsToString();

@@ -117,6 +117,46 @@ public class Utils
     {
         return params.getParam("statusurl");
     }
+    
+    /**
+     * Get the URL to send the time of the next scheduled status change to.
+     * @return the URL of the next status time URL.
+     */
+    public static String getNextStatusURL()
+    {
+        return params.getParam("nextstatusurl");
+    }
+
+    /**
+     * Get the URL to send the time of the next scheduled status change to.
+     * @return the URL of the next status time URL.
+     */
+    public static String getScheduleURL()
+    {
+        return params.getParam("scheduleurl");
+    }
+
+    /**
+     * Get the update period for next schedule change status.
+     * @return the time in seconds.
+     */
+    public static String getScheduleUpdatePeriod()
+    {
+        return params.getParam("scheduleupdate");
+    }
+    
+    public static String getIgnoredCommands() {
+        return params.getParam("ignoredcommands");
+    }
+
+    /**
+     * Get the update period for next schedule change status.
+     * @return the time in seconds.
+     */
+    public static String getActiveDelayTime()
+    {
+        return params.getParam("activeDelay");
+    }
 
     /**
      * Get the full path to the log directory.
@@ -125,6 +165,10 @@ public class Utils
     public static String getLogDir()
     {
         return params.getParam("logdir");
+    }
+    
+    public static String getPassword() {
+        return params.getParam("password");
     }
 
     /**
@@ -416,7 +460,7 @@ public class Utils
             reqEntity.addPart("subject[pol]", new StringBody("" + pol));
             reqEntity.addPart("subject[subchannel]", new StringBody("" + subchannel));
             reqEntity.addPart("subject[rendering]", new StringBody("" + getRendererVersion()));
-               httppost.setEntity(reqEntity);
+            httppost.setEntity(reqEntity);
 
             HttpResponse response = httpclient.execute(httppost);
             HttpEntity resEntity = response.getEntity();
