@@ -75,7 +75,7 @@ public class ScheduleMonitor implements Runnable {
                         timeInfo = getScheduleInfo( reader );
                     } while ( ignoredCommands.indexOf( "," + timeInfo[1] + "," ) > -1 );
 
-                    current = timeInfo[0].equals( "yes" );
+                    current = timeInfo[0].equals( "true" );
                     commandStr = timeInfo[1];
                     timeStart = Long.valueOf(timeInfo[2]);
                     timeEnd = Long.valueOf(timeInfo[3]);
