@@ -69,8 +69,13 @@ public final class Ingest
      * 2 - Scaling changed to 26, (X + Y)/2 polarization combined after ingest
      *     in FileInfo.combine(), from Renderer.Group.combine(), 
      *     from Renderer.combine(), from Renderer.combinePolarizations().
+     * 
+     * 3 - startTimeNanos as taken from timestamp files derived from log
+     *     changed to start of data collection as it should be. Prior to this,
+     *     starting in late June 2012, used start of baseline accumulation
+     *     taken from logs.
      */
-    static String rendering = "2";
+    static String rendering = "3";
     
     private String filename = "";
     private byte[] pixelData = null;
