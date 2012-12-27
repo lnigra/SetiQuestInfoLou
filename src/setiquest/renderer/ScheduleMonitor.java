@@ -32,6 +32,7 @@ public class ScheduleMonitor implements Runnable {
     String scheduleXmlStr, ignoredCommands;
     HttpGet httpGet;
     HttpPost httpPost;
+    int maxMinutesForContiguous = 10;
     
     ScheduleMonitor() {
         
@@ -46,7 +47,7 @@ public class ScheduleMonitor implements Runnable {
     public void run() {
 
         int ind1, ind2, tempInt;
-        boolean gotData = true, current;
+        boolean gotData = true, current, contiguous, ignored;
         String[] timeInfo;
         long timeNow, timeStart, timeEnd, timeNext, timeStartNext;
         String commandStr;
@@ -81,15 +82,21 @@ public class ScheduleMonitor implements Runnable {
                     timeEnd = Long.valueOf(timeInfo[3]);
                     
                     // Check if we have contiguous
-
                     do {
-                        timeInfo = getScheduleInfo( reader );
-                    } while ( ignoredCommands.indexOf( "," + timeInfo[1] + "," ) > -1 );
+                        do {
+                            timeInfo = getScheduleInfo( reader );
+                        } while ( ignoredCommands.indexOf( "," + timeInfo[1] + "," ) > -1 );
+
+                        if ( Long.valueOf( timeInfo[2] ) 
+                                <= timeEnd + 60000 * maxMinutesForContiguous ) {
+                            timeEnd = Long.valueOf( timeInfo[3] );
+                            commandStr = commandStr + ", " + timeInfo[1];
+                            contiguous = true;
+                        } else {
+                            contiguous = false;
+                        }
+                    } while( contiguous );
                     
-                    if ( Long.valueOf( timeInfo[2] ) == timeEnd ) {
-                        timeEnd = Long.valueOf( timeInfo[3] );
-                        commandStr = commandStr + ", " + timeInfo[1];
-                    }
                     instream.close();
                     
                     httpPost = new HttpPost(Utils.getNextStatusURL());
