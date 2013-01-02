@@ -47,7 +47,7 @@ public class ScheduleMonitor implements Runnable {
     public void run() {
 
         int ind1, ind2, tempInt;
-        boolean gotData = true, current, contiguous, ignored;
+        boolean gotData = true, current, contiguous;
         String[] timeInfo;
         long timeNow, timeStart, timeEnd, timeNext, timeStartNext;
         String commandStr;
@@ -87,8 +87,9 @@ public class ScheduleMonitor implements Runnable {
                             timeInfo = getScheduleInfo( reader );
                         } while ( ignoredCommands.indexOf( "," + timeInfo[1] + "," ) > -1 );
 
-                        if ( Long.valueOf( timeInfo[2] ) 
-                                <= timeEnd + 60000 * maxMinutesForContiguous ) {
+                        if ( !timeInfo[2].equals("0") && 
+                             Long.valueOf( timeInfo[2] ) 
+                               <= timeEnd + 60000 * maxMinutesForContiguous ) {
                             timeEnd = Long.valueOf( timeInfo[3] );
                             commandStr = commandStr + ", " + timeInfo[1];
                             contiguous = true;
